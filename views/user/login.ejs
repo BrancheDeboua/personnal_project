@@ -1,0 +1,15 @@
+<%- include('../templates/header.ejs'); %>
+
+    <div class="container">
+        <h1>Login</h1>
+
+        <form action="/user/login" method="POST">
+            <label for="email" class="form-label">Email</label>
+            <input type="text" name="email" class="form-control">
+            <label for="password" name="password" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control"><br>
+            <button type="submit" class="btn btn-light border">Submit</button>
+        </form>
+    </div>
+
+<%- include('../templates/footer.ejs'); %>
