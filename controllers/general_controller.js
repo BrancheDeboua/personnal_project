@@ -1,4 +1,5 @@
 const index = (req, res) => {
+    console.log(req.session);
     res.render('general/index');
 };
 

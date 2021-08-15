@@ -4,13 +4,14 @@
 
         <form action="/user/register" method="POST">
             <label for="username" class="form-label">Username</label>
-            <input type="text" name="username" class="form-control">
+            <input type="text" id="username" name="username" class="form-control">
             <label for="email" class="form-label">Email</label>
-            <input type="text" name="email" class="form-control">
+            <input type="text" id="email" name="email" class="form-control">
             <label for="password" name="password" class="form-label">Password</label>
-            <input type="password" name="password" class="form-control"><br>
+            <input type="password" id="password" name="password" class="form-control"><br>
             <button type="submit" class="btn btn-light border">Submit</button>
         </form>
+        <a href="/user/login">Login</a>
 
     </div>
 <%- include('../templates/footer.ejs'); %>

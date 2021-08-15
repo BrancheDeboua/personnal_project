@@ -2,8 +2,12 @@
 const express = require('express');
 const http = require('http');
 const { local_session } = require('./utils/auth');
-const { router } = require('./utils/database');
+//const { router } = require('./utils/database');
+const database = require('./config/database');
+const passport = require('passport');
 
+//const initializePassport = require('./passport_config');
+//initializePassport(passport);
 
 // ----- Routes include -----
 const gr = require('./routes/general_route');
@@ -15,7 +19,8 @@ const server = http.createServer(app);
 
 // ----- Middlewares -----
 app.set('view engine', 'ejs');
-app.use(router);
+//app.use(router);
+app.use(database.router);
 app.use(local_session);
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));

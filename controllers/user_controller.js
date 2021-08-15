@@ -1,5 +1,7 @@
-const { connection } = require('../utils/database');
+//const { connection } = require('../utils/database');
 const bcrypt = require('bcrypt');
+//const sequelize = require('../config/database');
+const Users = require('../models/user');
 
 // ----- get -----
 const login_get = (req, res) => {
@@ -18,51 +20,52 @@ const view_user = (req, res) => {
 };
 
 const logout = (req, res) => {
-    req.session.destroy();
+    try{ 
+        req.session.destroy();
+    }
+    catch(err){
+        console.log(err);
+    }
+    
     res.redirect('/');
 };
 
 // ----- post -----
-const login_post = (req, res) => {
+const login_post = async (req, res) => {
     const { email, password } = req.body;
-    connection.query('SELECT * FROM user WHERE email = \'' + email + '\';', (err, result, field) => {
-        if(result.length > 0){
-            bcrypt.compare(password, result[0].password, (err, r) => {
-                if(r){
-                    req.session.username = result[0].username;
-                    req.session.email = result[0].email;
-                    req.session.isAuth = true;
-                    res.redirect('/');
-                }
-                else {
-                    res.redirect('/user/login');
-                }
-            });
+    const users = await Users.findAll({ where: { email }});
+
+    if(users.length > 0){
+        if(await bcrypt.compare(password, users[0].password)) {
+            console.log("test");
+            req.session.username = users[0].username;
+            req.session.email = users[0].email;
+            req.session.isAuth = true;
+            res.redirect('/');
         }
         else{
             res.redirect('/user/register');
         }
-    });
+    }
+    else {
+        res.redirect('/user/register');
+    }
 };
 
-const register_post = (req, res) => {
+const register_post = async (req, res) => {
+    const { username, email } = req.body;
     const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if(pattern.test(req.body.email)){
-        connection.query('SELECT username FROM user WHERE username = \'' + req.body.username + '\' OR email = \'' + req.body.email + '\'; ', (err, result, field) => {
-            if (err) throw err;
 
-            if(result.length == 0){
-                bcrypt.hash(req.body.password, 13, (err, result) => {
-                    connection.query('INSERT INTO user VALUES (\'' + req.body.username + '\', \'' + req.body.email +'\', \'' + result + '\');', (err) => {
-                        if (err) throw err;
-                        res.redirect('/');
-                    });
-                })  
-            }
-            else {
-                res.redirect('/user/login');
-            }    
-        });
+    if(pattern.test(req.body.email)){
+        const users = await Users.findAll({where: { email } });
+        if (users.length == 0){
+            const password = await bcrypt.hash(req.body.password, 10);
+            await Users.create({ username, email, password});
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/user/login');
+        }
     }
     else{
         res.redirect('/user/register');
