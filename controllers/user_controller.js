@@ -1,11 +1,9 @@
-//const { connection } = require('../utils/database');
 const bcrypt = require('bcrypt');
-//const sequelize = require('../config/database');
 const Users = require('../models/user');
 
 // ----- get -----
 const login_get = (req, res) => {
-    res.render('user/login');
+    res.render('user/login', { status: 0 });
 };
 
 const register_get = (req, res) => {
@@ -21,13 +19,14 @@ const view_user = (req, res) => {
 
 const logout = (req, res) => {
     try{ 
-        req.session.destroy();
+        req.session.destroy(() => {
+            res.redirect('/');
+        });
     }
     catch(err){
         console.log(err);
+        res.redirect('/404');
     }
-    
-    res.redirect('/');
 };
 
 // ----- post -----
@@ -37,18 +36,20 @@ const login_post = async (req, res) => {
 
     if(users.length > 0){
         if(await bcrypt.compare(password, users[0].password)) {
-            console.log("test");
             req.session.username = users[0].username;
             req.session.email = users[0].email;
             req.session.isAuth = true;
-            res.redirect('/');
+
+            req.session.save(()=>{
+                res.redirect('/');
+            });
         }
         else{
-            res.redirect('/user/register');
+            res.render('user/login', { status: 2 });
         }
     }
     else {
-        res.redirect('/user/register');
+        res.render('user/login', { status: 1 });
     }
 };
 

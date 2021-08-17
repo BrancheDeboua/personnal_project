@@ -2,6 +2,11 @@
 
     <div class="container">
         <h1>Login</h1>
+        <% if(status == 1) {%>
+            <div class="email-error">Invalid email</div>
+        <% } else if (status == 2) { %>
+            <div class="password-error">Invalid password</div>
+        <% } %>
 
         <form action="/user/login" method="POST">
             <label for="email" class="form-label">Email</label>

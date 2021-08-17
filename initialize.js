@@ -1,9 +1,9 @@
 // This is an application used only to set up the database with sequelize
 
-const sequelize = require('./config/database');
+const database = require('./config/database');
 const Users = require('./models/user');
 
-sequelize.sync()
+database.sequelize.sync()
     .then(async (result) => {
         console.log('[Success]: ' + result);
         const users = await Users.findAll();
